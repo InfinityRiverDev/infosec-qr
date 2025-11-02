@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>System Loading...</title>
+  <style>
+    body {
+      background: black;
+      color: #00ff9f;
+      font-family: "Courier New", monospace;
+      text-align: center;
+      margin-top: 15%;
+    }
+    h1 { font-size: 2.5em; }
+    h2 { font-size: 1.5em; }
+    .active { color: #00ff9f; animation: blink 1s infinite alternate; }
+    @keyframes blink { from { opacity: 1; } to { opacity: 0.3; } }
+  </style>
+  <!-- Подключаем Firebase -->
+  <script type="module">
+    // Импорт SDK из CDN
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+    import { getDatabase, ref, onValue, runTransaction } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+    // 🔹 ВСТАВЬ СВОЙ КОД КОНФИГА СЮДА
+    const firebaseConfig = {
+        apiKey: "AIzaSyC9t0FlfMbGZHcVfQ0_ySCOCAwpKlF8Tao",
+        authDomain: "infosec-qr-show.firebaseapp.com",
+        databaseURL: "https://infosec-qr-show-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "infosec-qr-show",
+        storageBucket: "infosec-qr-show.firebasestorage.app",
+        messagingSenderId: "59751978125",
+        appId: "1:59751978125:web:47918b43d8ceacbf57bec4",
+        measurementId: "G-N8QT2RJTVZ"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const countRef = ref(db, 'connections');
+
+    // При загрузке страницы добавляем +1
+    runTransaction(countRef, (current) => {
+      return (current || 0) + 1;
+    });
+
+    // Отслеживаем обновления в реальном времени
+    onValue(countRef, (snapshot) => {
+      const count = snapshot.val() || 0;
+      const display = document.getElementById("count");
+      display.textContent = `🔹 Подключено устройств: ${count}`;
+      
+      if (count >= 10) {
+        document.getElementById("status").innerHTML = "✅ Система активирована!<br>Спасибо за подключение.";
+        document.body.style.background = "#001100";
+      }
+    });
+  </script>
+</head>
+<body>
+  <h1 class="active">Загрузка системы...</h1>
+  <h2 id="count">Подключено устройств: —</h2>
+  <h2 id="status">Ожидание подключений...</h2>
+</body>
+</html>
