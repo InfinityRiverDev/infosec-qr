@@ -5,19 +5,94 @@
   <title>INFSEC LAUNCH SYSTEM</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
-    /* Оставляем стиль похожим на предыдущий — можно менять */
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-    html,body{height:100%;margin:0;background:#000;font-family:'Share Tech Mono',monospace;color:#00ffcc;overflow:hidden;}
-    .matrixCanvas{position:absolute;left:0;top:0;width:100%;height:100%;z-index:0;opacity:0.18;}
-    .terminal{position:relative;z-index:2;width:85%;max-width:1200px;height:80%;margin:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,25,25,0.28);border-radius:14px;border:1px solid #00ffaa;box-shadow:0 0 30px #00ffaa33,inset 0 0 20px #00ffaa22;}
-    .header{position:absolute;top:18px;left:28px;color:#00ffaa;font-size:18px;letter-spacing:1px;}
-    .subtitle{font-size:22px;color:#00ffaa;margin-bottom:6px;text-shadow:0 0 8px #00ffaa;}
-    .counter{font-size:140px;color:#00ffcc;text-shadow:0 0 20px #00ffcc,0 0 80px #00ffcc;animation:flicker 3s infinite;}
+    html,body{
+      height:100%;
+      margin:0;
+      background:#000;
+      font-family:'Share Tech Mono',monospace;
+      color:#00ffcc;
+      overflow:hidden;
+    }
+    .matrixCanvas{
+      position:absolute;
+      left:0;top:0;
+      width:100%;height:100%;
+      z-index:0;opacity:0.18;
+    }
+    .terminal{
+      position:relative;z-index:2;
+      width:90%;max-width:1200px;
+      height:auto;min-height:70%;
+      margin:auto;margin-top:6vh;
+      display:flex;flex-direction:column;
+      align-items:center;justify-content:center;
+      background:rgba(0,25,25,0.28);
+      border-radius:14px;
+      border:1px solid #00ffaa;
+      box-shadow:0 0 30px #00ffaa33,inset 0 0 20px #00ffaa22;
+      padding:20px;
+      text-align:center;
+    }
+    .header{
+      color:#00ffaa;font-size:1.2rem;
+      letter-spacing:1px;
+      margin-bottom:1rem;
+    }
+    .subtitle{
+      font-size:1.2rem;
+      color:#00ffaa;
+      margin-bottom:0.5rem;
+      text-shadow:0 0 8px #00ffaa;
+    }
+    .counter{
+      font-size:clamp(60px,14vw,140px);
+      color:#00ffcc;
+      text-shadow:0 0 20px #00ffcc,0 0 80px #00ffcc;
+      animation:flicker 3s infinite;
+    }
     @keyframes flicker{0%,18%,22%,25%,53%,57%,100%{opacity:1}20%,24%,55%{opacity:0.5}}
-    .footer{position:absolute;top:24px;right:40px;font-size:72px;color:#00ff99;text-shadow:0 0 20px #00ff99;z-index:3;}
-    #timer{font-size:96px;color:#ff0044;text-shadow:0 0 26px #ff0044;display:none;margin-top:14px;}
-    #hack-start{font-size:120px;color:#ff0000;text-shadow:0 0 30px #ff0000;display:none;margin-top:16px;}
-    .infoLog{position:absolute;left:20px;bottom:20px;color:#66ffcc;opacity:0.9;font-size:14px;max-width:60%;text-align:left;white-space:pre-line;}
+    .footer{
+      position:absolute;top:3%;right:50%;
+      transform:translateX(50%);
+      font-size:clamp(36px,6vw,72px);
+      color:#00ff99;
+      text-shadow:0 0 20px #00ff99;
+      z-index:3;
+      text-align:center;
+      white-space:nowrap;
+    }
+    #timer{
+      font-size:clamp(48px,10vw,96px);
+      color:#ff0044;
+      text-shadow:0 0 26px #ff0044;
+      display:none;
+      margin-top:14px;
+    }
+    #hack-start{
+      font-size:clamp(54px,12vw,120px);
+      color:#ff0000;
+      text-shadow:0 0 30px #ff0000;
+      display:none;
+      margin-top:16px;
+      word-wrap:break-word;
+    }
+    .infoLog{
+      margin-top:20px;
+      color:#66ffcc;
+      opacity:0.85;
+      font-size:0.8rem;
+      max-width:90%;
+      text-align:left;
+      white-space:pre-line;
+      overflow:hidden;
+    }
+    @media (max-width:600px){
+      .terminal{min-height:60%;padding:12px;}
+      .subtitle{font-size:1rem;}
+      .header{font-size:1rem;}
+      .infoLog{display:none;}
+    }
   </style>
 </head>
 <body>
@@ -42,7 +117,7 @@
       getDatabase, ref, get, set, onValue, runTransaction, serverTimestamp
     } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    // ---- ВСТАВЬ СВОЙ FIREBASE CONFIG СЮДА ----
+    // 🔧 ВСТАВЬ СВОЙ FIREBASE CONFIG
     const firebaseConfig = {
       apiKey: "AIzaSyBDzmZgzjx3zcLm-bi38iQtNkqDfrqTII8",
       authDomain: "infosec-qr-show-cebb5.firebaseapp.com",
@@ -53,114 +128,67 @@
       appId: "1:818912167917:web:dcca7a8240e0cc03a3c9e4",
       measurementId: "G-LVMZJPB7JG"
     };
-    // -------------------------------------------
 
     const app = initializeApp(firebaseConfig);
     const db  = getDatabase(app);
 
-    // Ссылки в базе
     const connectionsRef = ref(db, 'connections');
-    const countdownRef   = ref(db, 'countdown');     // { start: <serverTimestamp>, duration: 10 }
-    const hackFlagRef    = ref(db, 'hackStarted');   // true when finished
+    const countdownRef   = ref(db, 'countdown');
+    const hackFlagRef    = ref(db, 'hackStarted');
 
     const counterEl = document.getElementById('counter');
     const timerEl   = document.getElementById('timer');
     const hackEl    = document.getElementById('hack-start');
     const logEl     = document.getElementById('log');
 
-    // Получаем смещение времени сервера, чтобы синхронизировать часы
     let serverTimeOffset = 0;
     const offsetRef = ref(db, '.info/serverTimeOffset');
-    onValue(offsetRef, snap => {
-      serverTimeOffset = snap.val() || 0;
-      log("Server time offset: " + serverTimeOffset + " ms");
-    });
+    onValue(offsetRef, snap => { serverTimeOffset = snap.val() || 0; });
 
-    // Лог helper
     function log(text){
       const t = new Date().toLocaleTimeString();
       logEl.textContent = `[${t}] ${text}\n` + logEl.textContent;
     }
+    function serverNow(){ return Date.now() + (serverTimeOffset || 0); }
 
-    // Вычислить "серверное" текущее время
-    function serverNow(){
-      return Date.now() + (serverTimeOffset || 0);
-    }
-
-    // Отслеживаем число подключений и обновляем отображение
     onValue(connectionsRef, snap => {
       const val = snap.val() || 0;
       counterEl.textContent = val;
-      log("Connections: " + val);
-
-      // если достигли порога и никто ещё не установил countdown, пытаемся атомарно установить старт
       if (val >= 10) {
-        // атомарно установить countdown.start, только если он ещё не установлен
         runTransaction(countdownRef, current => {
           if (current === null || current.start === undefined) {
-            // устанавливаем start = serverTimestamp(), duration = 10 (сек)
             return { start: serverTimestamp(), duration: 10 };
           }
-          return; // ничего не меняем, кто-то уже установил
-        }).then(result => {
-          if (result.committed) {
-            log("Countdown START set atomically by this client.");
-          } else {
-            log("Countdown already set by another client.");
-          }
-        }).catch(err => log("runTransaction error: " + err));
+          return;
+        });
       }
     });
 
-    // Отслеживаем флаг hackStarted — если true, показываем финал (и не убираем)
     onValue(hackFlagRef, snap => {
       const v = snap.val();
-      if (v === true) {
-        showHackStarted();
-        log("hackStarted flag is true (final visible).");
-      }
+      if (v === true) showHackStarted();
     });
 
-    // Отслеживаем countdownRef — когда появляется start, все синхронизируются
     onValue(countdownRef, snap => {
       const data = snap.val();
-      if (!data || !data.start) {
-        // таймер ещё не запущен
-        return;
-      }
-      const startTimestamp = data.start; // это серверный timestamp в ms
+      if (!data || !data.start) return;
+      const startTimestamp = data.start;
       const durationSec = data.duration || 10;
-
-      log("Countdown received. start=" + startTimestamp + " duration=" + durationSec);
-
-      // вычисляем оставшееся (ms)
       const now = serverNow();
       const endTime = startTimestamp + durationSec * 1000;
       let remainingMs = endTime - now;
 
       if (remainingMs <= 0) {
-        // таймер уже истёк — устанавливаем hackStarted если ещё не установлен
-        set(hackFlagRef, true).then(()=> {
-          showHackStarted();
-          log("Countdown already passed; hackStarted set true.");
-        }).catch(e => log("Error setting hackStarted: " + e));
+        set(hackFlagRef, true).then(showHackStarted);
         return;
       }
-
-      // иначе запускаем локальный отсчёт отображения со временем remainingMs
       startLocalCountdown(Math.ceil(remainingMs / 1000), () => {
-        // по завершению — ставим флаг hackStarted=true в базе
-        set(hackFlagRef, true).then(() => {
-          showHackStarted();
-          log("Countdown finished; hackStarted set true.");
-        }).catch(e => log("Error setting hackStarted: " + e));
+        set(hackFlagRef, true).then(showHackStarted);
       });
     });
 
-    // Функция: запуск локального интервала (показываем секунды)
     let localTimerHandle = null;
     function startLocalCountdown(seconds, onComplete){
-      // если уже показывается — не запускаем второй
       if (localTimerHandle) return;
       timerEl.style.display = "block";
       timerEl.textContent = seconds;
@@ -177,27 +205,18 @@
       }, 1000);
     }
 
-    // Показать финальную надпись и оставить навсегда
     function showHackStarted(){
-      // остановим локальный таймер если есть
-      if (localTimerHandle) {
-        clearInterval(localTimerHandle);
-        localTimerHandle = null;
-      }
+      if (localTimerHandle) clearInterval(localTimerHandle);
       timerEl.style.display = "none";
       hackEl.style.display = "block";
     }
 
-    // При заходе клиента — добавляем подключение (простая логика: +1 при заходе)
-    // Можно заменить на presence (onDisconnect) при желании
     get(connectionsRef).then(snap => {
       const current = snap.val() || 0;
-      set(connectionsRef, current + 1).then(() => {
-        log("Incremented connections to " + (current + 1));
-      }).catch(err => log("Error incrementing connections: " + err));
-    }).catch(err => log("Error reading connections: " + err));
+      set(connectionsRef, current + 1);
+    });
 
-    // ------- Матрица на фоне (canvas) -------
+    // Матрица
     const canvas = document.getElementById('matrixCanvas');
     const ctx = canvas.getContext('2d');
     function resizeCanvas(){
@@ -206,12 +225,10 @@
     }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
-
     const letters = '01АВГДЕЖЗИЛПРОТШХЦЮ';
     const fontSize = 16;
     const columns = Math.floor(canvas.width / fontSize);
     const drops = new Array(columns).fill(0);
-
     function drawMatrix(){
       ctx.fillStyle = 'rgba(0,0,0,0.08)';
       ctx.fillRect(0,0,canvas.width,canvas.height);
@@ -225,7 +242,6 @@
       }
     }
     setInterval(drawMatrix, 45);
-
   </script>
 </body>
 </html>
