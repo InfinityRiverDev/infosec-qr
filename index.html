@@ -2,118 +2,67 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>INF0SEC SYSTEM</title>
+  <title>Инфобез Счётчик</title>
   <style>
     body {
+      background: radial-gradient(circle at center, #000 60%, #020 100%);
+      color: #0f0;
+      font-family: "Consolas", monospace;
+      text-align: center;
+      padding-top: 120px;
       margin: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      background: radial-gradient(circle at 20% 20%, #0c0c0c, #000);
-      color: #00ff99;
-      font-family: 'Consolas', 'Courier New', monospace;
       overflow: hidden;
     }
 
-    .scanline {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 2px;
-      background: rgba(0, 255, 150, 0.2);
-      animation: scan 3s linear infinite;
-    }
-
-    @keyframes scan {
-      0% { top: 0; }
-      100% { top: 100%; }
-    }
-
-    .terminal {
-      text-align: center;
-      border: 2px solid #00ff99;
-      padding: 40px;
-      border-radius: 10px;
-      background: rgba(0, 0, 0, 0.4);
-      box-shadow: 0 0 20px #00ff99;
-      width: 80%;
-      max-width: 500px;
-      backdrop-filter: blur(3px);
-    }
-
     h1 {
-      font-size: 2em;
-      margin-bottom: 20px;
-      color: #00ff99;
-      letter-spacing: 2px;
+      font-size: 64px;
+      text-shadow: 0 0 25px #0f0;
+      margin-bottom: 40px;
+      animation: fadeIn 2s ease-in-out;
     }
 
-    #count {
-      font-size: 5em;
-      color: #00ff99;
-      text-shadow: 0 0 20px #00ff99;
-      transition: all 0.4s ease-in-out;
-    }
-
-    .blink {
-      animation: blink 1s infinite;
-    }
-
-    @keyframes blink {
-      50% { opacity: 0.3; }
-    }
-
-    .footer {
-      position: absolute;
-      bottom: 40px;
-      text-align: center;
-      font-size: 0.9em;
-      color: #00ff99;
-      opacity: 0.7;
-    }
-
-    .footer-line {
-      opacity: 0.4;
-    }
-
-    .accent {
-      font-size: 1.2em;
-      color: #00eaff;
-      text-shadow: 0 0 15px #00eaff;
-      letter-spacing: 2px;
+    #counter {
       font-weight: bold;
-      animation: pulse 2s infinite;
-      margin-top: 10px;
+      font-size: 90px;
+      text-shadow: 0 0 30px #00ff00, 0 0 10px #0f0;
+      animation: glow 2s infinite alternate;
+    }
+
+    .label {
+      margin-top: 80px;
+      font-size: 72px;
+      font-weight: bold;
+      color: #ff0040;
+      text-shadow: 0 0 40px #ff0040, 0 0 80px #ff0040;
+      animation: pulse 1.5s infinite alternate;
+      letter-spacing: 3px;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 10px #0f0; }
+      to { text-shadow: 0 0 40px #00ff00; }
     }
 
     @keyframes pulse {
-      0%, 100% { text-shadow: 0 0 10px #00eaff, 0 0 30px #00eaff; }
-      50% { text-shadow: 0 0 25px #00eaff, 0 0 60px #00eaff; }
+      from { transform: scale(1); opacity: 1; }
+      to { transform: scale(1.1); opacity: 0.85; }
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-
-  <div class="scanline"></div>
-
-  <div class="terminal">
-    <h1>INF0SEC ACCESS MONITOR</h1>
-    <div id="count" class="blink">0</div>
-  </div>
-
-  <div class="footer">
-    <div class="footer-line">[ INFOSEC NETWORK :: REALTIME CONNECTIONS MONITORING ]</div>
-    <div class="accent">КНИТУ ИХТИ 151-24</div>
-  </div>
+  <h1>Подключений: <span id="counter">0</span></h1>
+  <div class="label">КНИТУ ИХТИ 151-24</div>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-  
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+    
     const firebaseConfig = {
       apiKey: "AIzaSyBDzmZgzjx3zcLm-bi38iQtNkqDfrqTII8",
       authDomain: "infosec-qr-show-cebb5.firebaseapp.com",
@@ -124,37 +73,26 @@
       appId: "1:818912167917:web:dcca7a8240e0cc03a3c9e4",
       measurementId: "G-LVMZJPB7JG"
     };
-  
+
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const countRef = ref(db, 'connections'); // не вложенный объект, просто число
-    const countEl = document.getElementById('count');
-    let currentCount = 0;
-  
-    // Реактивное обновление
-    onValue(countRef, (snapshot) => {
-      const val = snapshot.val();
-      if (typeof val === 'number') {
-        currentCount = val;
-        countEl.textContent = val;
-      } else if (val === null) {
-        set(countRef, 0); // если базы нет, создаём
-        countEl.textContent = 0;
-      }
+    const counterRef = ref(db, "connections");
+    const counterEl = document.getElementById("counter");
+
+    // 🔁 Обновление счётчика при изменениях в базе
+    onValue(counterRef, (snapshot) => {
+      const value = snapshot.val() || 0;
+      counterEl.textContent = value;
     });
-  
-    // Инкремент только при первом визите
-    const visited = localStorage.getItem('visited');
-    if (!visited) {
-      get(countRef).then(snapshot => {
-        let val = snapshot.val();
-        if (typeof val !== 'number') val = 0;
-        set(countRef, val + 1);
+
+    // 💾 При первом визите с устройства — увеличить счётчик
+    if (!localStorage.getItem("visited")) {
+      get(counterRef).then(snapshot => {
+        const current = snapshot.val() || 0;
+        set(counterRef, current + 1);
+        localStorage.setItem("visited", "true");
       });
-      localStorage.setItem('visited', 'true');
     }
   </script>
-
-
 </body>
 </html>
