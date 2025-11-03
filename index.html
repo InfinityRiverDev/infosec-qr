@@ -113,45 +113,47 @@
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-
+  
     const firebaseConfig = {
-      apiKey: "AIzaSyBDzmZgzjx3zcLm-bi38iQtNkqDfrqTII8",
-      authDomain: "infosec-qr-show-cebb5.firebaseapp.com",
-      databaseURL: "https://infosec-qr-show-cebb5-default-rtdb.europe-west1.firebasedatabase.app",
-      projectId: "infosec-qr-show-cebb5",
-      storageBucket: "infosec-qr-show-cebb5.firebasestorage.app",
-      messagingSenderId: "818912167917",
-      appId: "1:818912167917:web:dcca7a8240e0cc03a3c9e4",
-      measurementId: "G-LVMZJPB7JG"
+      apiKey: "ТВОЙ_API_KEY",
+      authDomain: "infosec-qr-show.firebaseapp.com",
+      databaseURL: "https://infosec-qr-show-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "infosec-qr-show",
+      storageBucket: "infosec-qr-show.appspot.com",
+      messagingSenderId: "XXX",
+      appId: "XXX"
     };
-
+  
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
-    const countRef = ref(db, 'connections/count');
+    const countRef = ref(db, 'connections'); // не вложенный объект, просто число
     const countEl = document.getElementById('count');
     let currentCount = 0;
-
-    // Реактивное обновление без лагов
+  
+    // Реактивное обновление
     onValue(countRef, (snapshot) => {
-      const val = snapshot.val() || 0;
-      if (val !== currentCount) {
+      const val = snapshot.val();
+      if (typeof val === 'number') {
         currentCount = val;
         countEl.textContent = val;
-        countEl.classList.add('blink');
-        setTimeout(() => countEl.classList.remove('blink'), 1200);
+      } else if (val === null) {
+        set(countRef, 0); // если базы нет, создаём
+        countEl.textContent = 0;
       }
     });
-
-    // Инкремент только при первом заходе
+  
+    // Инкремент только при первом визите
     const visited = localStorage.getItem('visited');
     if (!visited) {
       get(countRef).then(snapshot => {
-        const val = snapshot.exists() ? snapshot.val() : 0;
+        let val = snapshot.val();
+        if (typeof val !== 'number') val = 0;
         set(countRef, val + 1);
       });
       localStorage.setItem('visited', 'true');
     }
   </script>
+
 
 </body>
 </html>
