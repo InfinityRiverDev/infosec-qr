@@ -6,136 +6,64 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
-    /* === ОБЩИЙ СТИЛЬ === */
-    body {
+    html, body {
       margin: 0;
       padding: 0;
-      background: #000;
-      font-family: 'Share Tech Mono', monospace;
-      color: #00ff99;
-      overflow: hidden;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      text-align: center;
-    }
-
-    /* === ЭФФЕКТ ГЛЮКОВ === */
-    .glitch {
-      position: relative;
-      color: #00ff99;
-      font-size: 140px;
-      text-shadow: 0 0 10px #00ff99, 0 0 40px #00ff99;
-      animation: flicker 3s infinite;
-    }
-
-    .glitch::before,
-    .glitch::after {
-      content: attr(data-text);
-      position: absolute;
-      left: 0;
-      top: 0;
-      width: 100%;
-      overflow: hidden;
-      color: #ff0033;
-      clip: rect(0, 0, 0, 0);
-    }
-
-    .glitch::before {
-      animation: glitchTop 2s infinite linear alternate-reverse;
-    }
-
-    .glitch::after {
-      color: #00ffff;
-      animation: glitchBottom 2.5s infinite linear alternate-reverse;
-    }
-
-    @keyframes glitchTop {
-      0% { clip: rect(0, 9999px, 0, 0); transform: translate(0); }
-      10% { clip: rect(10px, 9999px, 60px, 0); transform: translate(-5px, -5px); }
-      20% { clip: rect(85px, 9999px, 140px, 0); transform: translate(5px, 0); }
-      30% { clip: rect(45px, 9999px, 80px, 0); transform: translate(-3px, 3px); }
-      100% { clip: rect(0, 9999px, 0, 0); transform: translate(0); }
-    }
-
-    @keyframes glitchBottom {
-      0% { clip: rect(0, 9999px, 0, 0); transform: translate(0); }
-      10% { clip: rect(130px, 9999px, 200px, 0); transform: translate(3px, 3px); }
-      20% { clip: rect(50px, 9999px, 100px, 0); transform: translate(-5px, 0); }
-      30% { clip: rect(20px, 9999px, 60px, 0); transform: translate(5px, -2px); }
-      100% { clip: rect(0, 9999px, 0, 0); transform: translate(0); }
-    }
-
-    @keyframes flicker {
-      0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
-      20%, 24%, 55% { opacity: 0.4; }
-    }
-
-    /* === КУРСОР === */
-    .cursor {
-      display: inline-block;
-      width: 10px;
-      height: 40px;
-      background: #00ff99;
-      margin-left: 10px;
-      animation: blink 0.7s infinite;
-    }
-
-    @keyframes blink {
-      0%, 50% { opacity: 1; }
-      51%, 100% { opacity: 0; }
-    }
-
-    /* === ПОДПИСЬ === */
-    .label {
-      margin-top: 80px;
-      font-size: 80px;
-      color: #ff0033;
-      text-shadow: 0 0 20px #ff0033, 0 0 60px #ff0033;
-      animation: pulse 1.8s infinite alternate;
-      letter-spacing: 3px;
-    }
-
-    @keyframes pulse {
-      from { transform: scale(1); opacity: 1; }
-      to { transform: scale(1.05); opacity: 0.8; }
-    }
-
-    /* === ФОН: цифровой шум === */
-    .matrix {
-      position: absolute;
-      top: 0;
-      left: 0;
       width: 100%;
       height: 100%;
-      background-image: repeating-linear-gradient(0deg, rgba(0,255,100,0.05) 0px, rgba(0,255,100,0.05) 1px, transparent 1px, transparent 40px),
-                        repeating-linear-gradient(90deg, rgba(0,255,100,0.05) 0px, rgba(0,255,100,0.05) 1px, transparent 1px, transparent 40px);
-      z-index: 0;
-      animation: matrix 10s linear infinite;
+      background: radial-gradient(circle at center, #020202 0%, #000 100%);
+      color: #00ffcc;
+      font-family: 'Share Tech Mono', monospace;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      position: relative;
     }
 
-    @keyframes matrix {
-      from { background-position: 0 0, 0 0; }
-      to { background-position: 0 40px, 40px 0; }
+    .bg {
+      position: absolute;
+      width: 200%;
+      height: 200%;
+      background: repeating-linear-gradient(
+        90deg,
+        rgba(0,255,200,0.05) 0px,
+        rgba(0,255,200,0.05) 1px,
+        transparent 1px,
+        transparent 40px
+      ),
+      repeating-linear-gradient(
+        0deg,
+        rgba(0,255,200,0.05) 0px,
+        rgba(0,255,200,0.05) 1px,
+        transparent 1px,
+        transparent 40px
+      );
+      animation: drift 30s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes drift {
+      from { transform: translate(0, 0); }
+      to { transform: translate(-200px, -200px); }
     }
 
     /* === ЭФФЕКТ ЭКРАНА === */
-    .screen {
+    .scan {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       background: repeating-linear-gradient(
-        rgba(0,255,0,0.03) 0px,
-        rgba(0,255,0,0.03) 1px,
-        transparent 1px,
-        transparent 2px
+        rgba(0,255,0,0.05) 0px,
+        rgba(0,255,0,0.05) 2px,
+        transparent 2px,
+        transparent 4px
       );
-      pointer-events: none;
-      animation: scan 4s linear infinite;
+      animation: scan 3s linear infinite;
+      z-index: 1;
     }
 
     @keyframes scan {
@@ -143,15 +71,108 @@
       100% { background-position: 0 100%; }
     }
 
+    .glitch {
+      position: relative;
+      font-size: 160px;
+      color: #00ffcc;
+      text-shadow: 0 0 15px #00ffcc, 0 0 40px #00ffcc;
+      z-index: 2;
+      animation: flicker 3s infinite;
+    }
+
+    .glitch::before, .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      right: 0;
+      overflow: hidden;
+    }
+
+    .glitch::before {
+      color: #ff0044;
+      clip-path: inset(0 0 60% 0);
+      animation: glitch-top 2s infinite linear alternate-reverse;
+    }
+
+    .glitch::after {
+      color: #00ffff;
+      clip-path: inset(40% 0 0 0);
+      animation: glitch-bottom 2.5s infinite linear alternate-reverse;
+    }
+
+    @keyframes glitch-top {
+      0% { transform: translate(0,0); }
+      20% { transform: translate(-5px,-2px); }
+      40% { transform: translate(5px,2px); }
+      60% { transform: translate(-3px,3px); }
+      100% { transform: translate(0,0); }
+    }
+
+    @keyframes glitch-bottom {
+      0% { transform: translate(0,0); }
+      20% { transform: translate(3px,3px); }
+      40% { transform: translate(-4px,1px); }
+      60% { transform: translate(2px,-3px); }
+      100% { transform: translate(0,0); }
+    }
+
+    @keyframes flicker {
+      0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+      20%, 24%, 55% { opacity: 0.5; }
+    }
+
+
+    .subtitle {
+      font-size: 28px;
+      color: #00ffaa;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px #00ffaa;
+      margin-bottom: 20px;
+      z-index: 2;
+    }
+
+
+    .footer {
+      position: absolute;
+      bottom: 60px;
+      text-align: center;
+      font-size: 70px;
+      color: #ff0044;
+      text-shadow: 0 0 20px #ff0044, 0 0 60px #ff0044;
+      animation: pulse 2s infinite alternate;
+      z-index: 2;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); opacity: 1; }
+      to { transform: scale(1.05); opacity: 0.8; }
+    }
+
+    /* === ДОП ЭФФЕКТ: РАНДОМНЫЙ ШУМ === */
+    .noise {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('https://media.giphy.com/media/oEI9uBYSzLpBK/giphy.gif');
+      opacity: 0.05;
+      z-index: 3;
+      pointer-events: none;
+      mix-blend-mode: lighten;
+    }
+
   </style>
 </head>
 <body>
-  <div class="matrix"></div>
-  <div class="screen"></div>
+  <div class="bg"></div>
+  <div class="scan"></div>
+  <div class="noise"></div>
 
+  <div class="subtitle">Количество подключенных устройств</div>
   <div class="glitch" id="counter" data-text="0">0</div>
-  <div class="cursor"></div>
-  <div class="label">КНИТУ ИХТИ 151-24</div>
+
+  <div class="footer">КНИТУ ИХТИ 151-24</div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
@@ -168,20 +189,19 @@
       measurementId: "G-LVMZJPB7JG"
     };
 
-
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const counterRef = ref(db, "connections");
     const counterEl = document.getElementById("counter");
 
-    // 🔁 Обновление счётчика в реальном времени
+ 
     onValue(counterRef, (snapshot) => {
       const val = snapshot.val() || 0;
       counterEl.textContent = val;
       counterEl.setAttribute('data-text', val);
     });
 
-    // ➕ Добавляем +1 при входе
+
     get(counterRef).then(snapshot => {
       const current = snapshot.val() || 0;
       set(counterRef, current + 1);
