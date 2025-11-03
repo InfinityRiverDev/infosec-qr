@@ -3,34 +3,117 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Инфобез QR</title>
+  <title>INF0SEC SYSTEM</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: black;
-      color: lime;
+      margin: 0;
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
-      height: 100vh;
+      align-items: center;
+      background: radial-gradient(circle at 20% 20%, #0c0c0c, #000);
+      color: #00ff99;
+      font-family: 'Consolas', 'Courier New', monospace;
+      overflow: hidden;
     }
+
+    .scanline {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: rgba(0, 255, 150, 0.2);
+      animation: scan 3s linear infinite;
+    }
+
+    @keyframes scan {
+      0% { top: 0; }
+      100% { top: 100%; }
+    }
+
+    .terminal {
+      text-align: center;
+      border: 2px solid #00ff99;
+      padding: 40px;
+      border-radius: 10px;
+      background: rgba(0, 0, 0, 0.4);
+      box-shadow: 0 0 20px #00ff99;
+      width: 80%;
+      max-width: 500px;
+      backdrop-filter: blur(3px);
+    }
+
+    h1 {
+      font-size: 2em;
+      margin-bottom: 20px;
+      color: #00ff99;
+      letter-spacing: 2px;
+    }
+
     #count {
       font-size: 5em;
+      color: #00ff99;
+      text-shadow: 0 0 20px #00ff99;
+      transition: all 0.4s ease-in-out;
+    }
+
+    .blink {
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      50% { opacity: 0.3; }
+    }
+
+    .footer {
+      position: absolute;
+      bottom: 40px;
+      text-align: center;
+      font-size: 0.9em;
+      color: #00ff99;
+      opacity: 0.7;
+    }
+
+    .footer-line {
+      opacity: 0.4;
+    }
+
+    .accent {
+      font-size: 1.2em;
+      color: #00eaff;
+      text-shadow: 0 0 15px #00eaff;
+      letter-spacing: 2px;
+      font-weight: bold;
+      animation: pulse 2s infinite;
+      margin-top: 10px;
+    }
+
+    @keyframes pulse {
+      0%, 100% { text-shadow: 0 0 10px #00eaff, 0 0 30px #00eaff; }
+      50% { text-shadow: 0 0 25px #00eaff, 0 0 60px #00eaff; }
     }
   </style>
 </head>
 <body>
-  <h1>Подключений:</h1>
-  <div id="count">0</div>
 
-  <!-- Firebase SDK -->
+  <div class="scanline"></div>
+
+  <div class="terminal">
+    <h1>INF0SEC ACCESS MONITOR</h1>
+    <div id="count" class="blink">0</div>
+  </div>
+
+  <div class="footer">
+    <div class="footer-line">[ INFOSEC NETWORK :: REALTIME CONNECTIONS MONITORING ]</div>
+    <div class="accent">КНИТУ ИХТИ 151-24</div>
+  </div>
+
   <script type="module">
-    // Импорт нужных SDK
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
     import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 
-    // Твой Firebase config (замени на свой из консоли)
     const firebaseConfig = {
       apiKey: "AIzaSyBDzmZgzjx3zcLm-bi38iQtNkqDfrqTII8",
       authDomain: "infosec-qr-show-cebb5.firebaseapp.com",
@@ -42,27 +125,33 @@
       measurementId: "G-LVMZJPB7JG"
     };
 
-    // Инициализация
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const countRef = ref(db, 'connections/count');
+    const countEl = document.getElementById('count');
+    let currentCount = 0;
 
-    // Отображаем текущее значение
+    // Реактивное обновление без лагов
     onValue(countRef, (snapshot) => {
-      document.getElementById('count').textContent = snapshot.val() || 0;
+      const val = snapshot.val() || 0;
+      if (val !== currentCount) {
+        currentCount = val;
+        countEl.textContent = val;
+        countEl.classList.add('blink');
+        setTimeout(() => countEl.classList.remove('blink'), 1200);
+      }
     });
 
-    // Проверяем, заходил ли пользователь ранее
+    // Инкремент только при первом заходе
     const visited = localStorage.getItem('visited');
     if (!visited) {
-      // Если первый раз — увеличиваем счётчик
       get(countRef).then(snapshot => {
-        const currentCount = snapshot.exists() ? snapshot.val() : 0;
-        set(countRef, currentCount + 1);
+        const val = snapshot.exists() ? snapshot.val() : 0;
+        set(countRef, val + 1);
       });
-      // Ставим метку
       localStorage.setItem('visited', 'true');
     }
   </script>
+
 </body>
 </html>
