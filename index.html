@@ -1,179 +1,48 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="utf-8" />
   <title>INFSEC LAUNCH SYSTEM</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <style>
+    /* Оставляем стиль похожим на предыдущий — можно менять */
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
-
-    html, body {
-      margin: 0;
-      padding: 0;
-      width: 100%;
-      height: 100%;
-      background: #000;
-      color: #00ffcc;
-      font-family: 'Share Tech Mono', monospace;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* ====== Фоновые цифры ====== */
-    .matrix {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      background: radial-gradient(circle at center, #020202 0%, #000 100%);
-      z-index: 0;
-    }
-
-    canvas {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      opacity: 0.25;
-    }
-
-    /* ====== Окно-интерфейс ====== */
-    .terminal {
-      width: 85%;
-      max-width: 1200px;
-      height: 80%;
-      background: rgba(0, 30, 30, 0.3);
-      border: 1px solid #00ffaa;
-      box-shadow: 0 0 30px #00ffaa inset, 0 0 50px #00ffaa44;
-      border-radius: 15px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      z-index: 2;
-      position: relative;
-      backdrop-filter: blur(2px);
-    }
-
-    .header {
-      position: absolute;
-      top: 10px;
-      left: 20px;
-      font-size: 20px;
-      color: #00ffaa;
-      text-shadow: 0 0 10px #00ffaa;
-      letter-spacing: 2px;
-    }
-
-    /* ====== Главные надписи ====== */
-    .title {
-      font-size: 70px;
-      color: #ff0044;
-      text-shadow: 0 0 15px #ff0044, 0 0 50px #ff0044;
-      animation: pulseTitle 2s infinite alternate;
-      letter-spacing: 3px;
-      z-index: 3;
-    }
-
-    @keyframes pulseTitle {
-      from { transform: scale(1); opacity: 1; }
-      to { transform: scale(1.05); opacity: 0.85; }
-    }
-
-    .subtitle {
-      font-size: 26px;
-      color: #00ffaa;
-      margin-bottom: 10px;
-      text-shadow: 0 0 8px #00ffaa;
-    }
-
-    /* ====== Счётчик ====== */
-    .counter {
-      font-size: 150px;
-      color: #00ffcc;
-      text-shadow: 0 0 20px #00ffcc, 0 0 80px #00ffcc;
-      animation: flicker 3s infinite;
-    }
-
-    @keyframes flicker {
-      0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
-      20%, 24%, 55% { opacity: 0.5; }
-    }
-
-    /* ====== Таймер ====== */
-    #timer {
-      font-size: 90px;
-      color: #ff0044;
-      text-shadow: 0 0 30px #ff0044, 0 0 80px #ff0044;
-      margin-top: 30px;
-      display: none;
-      z-index: 4;
-      animation: flicker 1.5s infinite;
-    }
-
-    /* ====== Хак начался ====== */
-    #hack-start {
-      font-size: 120px;
-      color: #ff0000;
-      text-shadow: 0 0 25px #ff0000, 0 0 60px #ff0000;
-      display: none;
-      z-index: 6;
-      animation: pulse 1.2s infinite alternate;
-    }
-
-    @keyframes pulse {
-      from { transform: scale(1); opacity: 1; }
-      to { transform: scale(1.08); opacity: 0.8; }
-    }
-
-    /* ====== Подпись ====== */
-    .footer {
-      position: absolute;
-      top: 30px;
-      right: 50px;
-      font-size: 70px;
-      font-weight: bold;
-      color: #00ff99;
-      text-shadow: 0 0 20px #00ff99, 0 0 60px #00ff99;
-      animation: glitchText 2s infinite alternate;
-      z-index: 3;
-    }
-
-    @keyframes glitchText {
-      0% { transform: translate(0); }
-      25% { transform: translate(1px, -2px); }
-      50% { transform: translate(-2px, 1px); }
-      75% { transform: translate(2px, 1px); }
-      100% { transform: translate(0); }
-    }
+    html,body{height:100%;margin:0;background:#000;font-family:'Share Tech Mono',monospace;color:#00ffcc;overflow:hidden;}
+    .matrixCanvas{position:absolute;left:0;top:0;width:100%;height:100%;z-index:0;opacity:0.18;}
+    .terminal{position:relative;z-index:2;width:85%;max-width:1200px;height:80%;margin:auto;display:flex;flex-direction:column;align-items:center;justify-content:center;background:rgba(0,25,25,0.28);border-radius:14px;border:1px solid #00ffaa;box-shadow:0 0 30px #00ffaa33,inset 0 0 20px #00ffaa22;}
+    .header{position:absolute;top:18px;left:28px;color:#00ffaa;font-size:18px;letter-spacing:1px;}
+    .subtitle{font-size:22px;color:#00ffaa;margin-bottom:6px;text-shadow:0 0 8px #00ffaa;}
+    .counter{font-size:140px;color:#00ffcc;text-shadow:0 0 20px #00ffcc,0 0 80px #00ffcc;animation:flicker 3s infinite;}
+    @keyframes flicker{0%,18%,22%,25%,53%,57%,100%{opacity:1}20%,24%,55%{opacity:0.5}}
+    .footer{position:absolute;top:24px;right:40px;font-size:72px;color:#00ff99;text-shadow:0 0 20px #00ff99;z-index:3;}
+    #timer{font-size:96px;color:#ff0044;text-shadow:0 0 26px #ff0044;display:none;margin-top:14px;}
+    #hack-start{font-size:120px;color:#ff0000;text-shadow:0 0 30px #ff0000;display:none;margin-top:16px;}
+    .infoLog{position:absolute;left:20px;bottom:20px;color:#66ffcc;opacity:0.9;font-size:14px;max-width:60%;text-align:left;white-space:pre-line;}
   </style>
 </head>
 <body>
-  <div class="matrix">
-    <canvas id="matrixCanvas"></canvas>
-  </div>
+  <canvas id="matrixCanvas" class="matrixCanvas"></canvas>
 
   <div class="footer">КНИТУ ИХТИ 151-24</div>
 
-  <div class="terminal">
+  <div class="terminal" role="main" aria-live="polite">
     <div class="header">INFSEC CONTROL PANEL // ACCESS GRANTED</div>
-    <div class="subtitle">Количество подключенных устройств:</div>
-    <div class="counter" id="counter">0</div>
-    <div id="timer"></div>
-    <div id="hack-start">ХАК НАЧАЛСЯ</div>
-    <div class="title">INFSEC LAUNCH SEQUENCE</div>
+    <div class="subtitle">Количество подключенных устройств</div>
+    <div id="counter" class="counter" aria-hidden="true">0</div>
+
+    <div id="timer" aria-hidden="true"></div>
+    <div id="hack-start" aria-hidden="true">ХАК НАЧАЛСЯ</div>
+
+    <div class="infoLog" id="log"></div>
   </div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    import {
+      getDatabase, ref, get, set, onValue, runTransaction, serverTimestamp
+    } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
+    // ---- ВСТАВЬ СВОЙ FIREBASE CONFIG СЮДА ----
     const firebaseConfig = {
       apiKey: "AIzaSyBDzmZgzjx3zcLm-bi38iQtNkqDfrqTII8",
       authDomain: "infosec-qr-show-cebb5.firebaseapp.com",
@@ -184,77 +53,179 @@
       appId: "1:818912167917:web:dcca7a8240e0cc03a3c9e4",
       measurementId: "G-LVMZJPB7JG"
     };
+    // -------------------------------------------
 
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const counterRef = ref(db, "connections");
-    const counterEl = document.getElementById("counter");
-    const timerEl = document.getElementById("timer");
-    const hackEl = document.getElementById("hack-start");
+    const db  = getDatabase(app);
 
-    let countdownStarted = false;
+    // Ссылки в базе
+    const connectionsRef = ref(db, 'connections');
+    const countdownRef   = ref(db, 'countdown');     // { start: <serverTimestamp>, duration: 10 }
+    const hackFlagRef    = ref(db, 'hackStarted');   // true when finished
 
-    onValue(counterRef, (snapshot) => {
-      const val = snapshot.val() || 0;
+    const counterEl = document.getElementById('counter');
+    const timerEl   = document.getElementById('timer');
+    const hackEl    = document.getElementById('hack-start');
+    const logEl     = document.getElementById('log');
+
+    // Получаем смещение времени сервера, чтобы синхронизировать часы
+    let serverTimeOffset = 0;
+    const offsetRef = ref(db, '.info/serverTimeOffset');
+    onValue(offsetRef, snap => {
+      serverTimeOffset = snap.val() || 0;
+      log("Server time offset: " + serverTimeOffset + " ms");
+    });
+
+    // Лог helper
+    function log(text){
+      const t = new Date().toLocaleTimeString();
+      logEl.textContent = `[${t}] ${text}\n` + logEl.textContent;
+    }
+
+    // Вычислить "серверное" текущее время
+    function serverNow(){
+      return Date.now() + (serverTimeOffset || 0);
+    }
+
+    // Отслеживаем число подключений и обновляем отображение
+    onValue(connectionsRef, snap => {
+      const val = snap.val() || 0;
       counterEl.textContent = val;
+      log("Connections: " + val);
 
-      if (val >= 10 && !countdownStarted) {
-        countdownStarted = true;
-        startCountdown(10);
+      // если достигли порога и никто ещё не установил countdown, пытаемся атомарно установить старт
+      if (val >= 10) {
+        // атомарно установить countdown.start, только если он ещё не установлен
+        runTransaction(countdownRef, current => {
+          if (current === null || current.start === undefined) {
+            // устанавливаем start = serverTimestamp(), duration = 10 (сек)
+            return { start: serverTimestamp(), duration: 10 };
+          }
+          return; // ничего не меняем, кто-то уже установил
+        }).then(result => {
+          if (result.committed) {
+            log("Countdown START set atomically by this client.");
+          } else {
+            log("Countdown already set by another client.");
+          }
+        }).catch(err => log("runTransaction error: " + err));
       }
     });
 
-    get(counterRef).then(snapshot => {
-      const current = snapshot.val() || 0;
-      set(counterRef, current + 1);
+    // Отслеживаем флаг hackStarted — если true, показываем финал (и не убираем)
+    onValue(hackFlagRef, snap => {
+      const v = snap.val();
+      if (v === true) {
+        showHackStarted();
+        log("hackStarted flag is true (final visible).");
+      }
     });
 
-    function startCountdown(seconds) {
+    // Отслеживаем countdownRef — когда появляется start, все синхронизируются
+    onValue(countdownRef, snap => {
+      const data = snap.val();
+      if (!data || !data.start) {
+        // таймер ещё не запущен
+        return;
+      }
+      const startTimestamp = data.start; // это серверный timestamp в ms
+      const durationSec = data.duration || 10;
+
+      log("Countdown received. start=" + startTimestamp + " duration=" + durationSec);
+
+      // вычисляем оставшееся (ms)
+      const now = serverNow();
+      const endTime = startTimestamp + durationSec * 1000;
+      let remainingMs = endTime - now;
+
+      if (remainingMs <= 0) {
+        // таймер уже истёк — устанавливаем hackStarted если ещё не установлен
+        set(hackFlagRef, true).then(()=> {
+          showHackStarted();
+          log("Countdown already passed; hackStarted set true.");
+        }).catch(e => log("Error setting hackStarted: " + e));
+        return;
+      }
+
+      // иначе запускаем локальный отсчёт отображения со временем remainingMs
+      startLocalCountdown(Math.ceil(remainingMs / 1000), () => {
+        // по завершению — ставим флаг hackStarted=true в базе
+        set(hackFlagRef, true).then(() => {
+          showHackStarted();
+          log("Countdown finished; hackStarted set true.");
+        }).catch(e => log("Error setting hackStarted: " + e));
+      });
+    });
+
+    // Функция: запуск локального интервала (показываем секунды)
+    let localTimerHandle = null;
+    function startLocalCountdown(seconds, onComplete){
+      // если уже показывается — не запускаем второй
+      if (localTimerHandle) return;
       timerEl.style.display = "block";
-      let remaining = seconds;
-
-      const tick = setInterval(() => {
-        timerEl.textContent = remaining;
-        remaining--;
-
-        if (remaining < 0) {
-          clearInterval(tick);
+      timerEl.textContent = seconds;
+      localTimerHandle = setInterval(() => {
+        seconds--;
+        if (seconds <= 0) {
+          clearInterval(localTimerHandle);
+          localTimerHandle = null;
           timerEl.style.display = "none";
-          hackEl.style.display = "block";
+          if (typeof onComplete === 'function') onComplete();
+        } else {
+          timerEl.textContent = seconds;
         }
       }, 1000);
     }
 
-    // === Матрица на фоне ===
-    const canvas = document.getElementById("matrixCanvas");
-    const ctx = canvas.getContext("2d");
+    // Показать финальную надпись и оставить навсегда
+    function showHackStarted(){
+      // остановим локальный таймер если есть
+      if (localTimerHandle) {
+        clearInterval(localTimerHandle);
+        localTimerHandle = null;
+      }
+      timerEl.style.display = "none";
+      hackEl.style.display = "block";
+    }
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    // При заходе клиента — добавляем подключение (простая логика: +1 при заходе)
+    // Можно заменить на presence (onDisconnect) при желании
+    get(connectionsRef).then(snap => {
+      const current = snap.val() || 0;
+      set(connectionsRef, current + 1).then(() => {
+        log("Incremented connections to " + (current + 1));
+      }).catch(err => log("Error incrementing connections: " + err));
+    }).catch(err => log("Error reading connections: " + err));
 
-    const letters = "01АВГДЕЖЗИЛПРОТШХЦЮ";
+    // ------- Матрица на фоне (canvas) -------
+    const canvas = document.getElementById('matrixCanvas');
+    const ctx = canvas.getContext('2d');
+    function resizeCanvas(){
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    }
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+
+    const letters = '01АВГДЕЖЗИЛПРОТШХЦЮ';
     const fontSize = 16;
-    const columns = canvas.width / fontSize;
-    const drops = Array(Math.floor(columns)).fill(1);
+    const columns = Math.floor(canvas.width / fontSize);
+    const drops = new Array(columns).fill(0);
 
-    function draw() {
-      ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = "#00ff99";
-      ctx.font = fontSize + "px monospace";
-
-      for (let i = 0; i < drops.length; i++) {
+    function drawMatrix(){
+      ctx.fillStyle = 'rgba(0,0,0,0.08)';
+      ctx.fillRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = '#00ff99';
+      ctx.font = fontSize + 'px monospace';
+      for (let i = 0; i < drops.length; i++){
         const text = letters.charAt(Math.floor(Math.random() * letters.length));
         ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-
-        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-          drops[i] = 0;
-        }
+        if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
         drops[i]++;
       }
     }
+    setInterval(drawMatrix, 45);
 
-    setInterval(draw, 35);
   </script>
 </body>
 </html>
