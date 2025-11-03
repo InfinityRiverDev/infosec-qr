@@ -1,68 +1,127 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Инфобез Счётчик</title>
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+
     body {
-      background: radial-gradient(circle at center, #000 60%, #020 100%);
-      color: #0f0;
-      font-family: "Consolas", monospace;
-      text-align: center;
-      padding-top: 120px;
       margin: 0;
+      background-color: #000;
+      color: #00ff99;
+      font-family: 'Share Tech Mono', monospace;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
       overflow: hidden;
     }
 
+    /* Эффект движущейся “сетки” */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: repeating-linear-gradient(
+        0deg,
+        rgba(0,255,100,0.05) 0px,
+        rgba(0,255,100,0.05) 1px,
+        transparent 1px,
+        transparent 40px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        rgba(0,255,100,0.05) 0px,
+        rgba(0,255,100,0.05) 1px,
+        transparent 1px,
+        transparent 40px
+      );
+      z-index: 0;
+      animation: gridMove 10s linear infinite;
+    }
+
+    @keyframes gridMove {
+      from { background-position: 0 0, 0 0; }
+      to { background-position: 0 40px, 40px 0; }
+    }
+
     h1 {
-      font-size: 64px;
-      text-shadow: 0 0 25px #0f0;
-      margin-bottom: 40px;
-      animation: fadeIn 2s ease-in-out;
+      font-size: 70px;
+      text-shadow: 0 0 20px #00ff99, 0 0 50px #00ff99;
+      z-index: 1;
+      letter-spacing: 3px;
+      margin: 0;
     }
 
     #counter {
+      font-size: 160px;
       font-weight: bold;
-      font-size: 90px;
-      text-shadow: 0 0 30px #00ff00, 0 0 10px #0f0;
-      animation: glow 2s infinite alternate;
+      color: #0f0;
+      text-shadow: 0 0 40px #00ff00, 0 0 100px #00ff00;
+      margin-top: 40px;
+      animation: flicker 2s infinite;
+      z-index: 1;
+    }
+
+    @keyframes flicker {
+      0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        opacity: 1;
+      }
+      20%, 24%, 55% {
+        opacity: 0.4;
+      }
     }
 
     .label {
-      margin-top: 80px;
-      font-size: 72px;
+      margin-top: 100px;
+      font-size: 80px;
       font-weight: bold;
-      color: #ff0040;
-      text-shadow: 0 0 40px #ff0040, 0 0 80px #ff0040;
+      color: #ff0033;
+      text-shadow: 0 0 30px #ff0033, 0 0 60px #ff0033;
       animation: pulse 1.5s infinite alternate;
-      letter-spacing: 3px;
-    }
-
-    @keyframes glow {
-      from { text-shadow: 0 0 10px #0f0; }
-      to { text-shadow: 0 0 40px #00ff00; }
+      letter-spacing: 4px;
+      z-index: 1;
     }
 
     @keyframes pulse {
       from { transform: scale(1); opacity: 1; }
-      to { transform: scale(1.1); opacity: 0.85; }
+      to { transform: scale(1.1); opacity: 0.9; }
     }
 
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-30px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* Эффект сканирующей линии */
+    .scan-line {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: rgba(0,255,0,0.5);
+      box-shadow: 0 0 20px 5px rgba(0,255,0,0.3);
+      animation: scan 3s linear infinite;
+      z-index: 1;
+    }
+
+    @keyframes scan {
+      0% { top: 0; }
+      100% { top: 100%; }
     }
   </style>
 </head>
 <body>
-  <h1>Подключений: <span id="counter">0</span></h1>
+  <div class="scan-line"></div>
+  <h1>Подключений</h1>
+  <div id="counter">0</div>
   <div class="label">КНИТУ ИХТИ 151-24</div>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
     import { getDatabase, ref, get, set, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-    
     const firebaseConfig = {
       apiKey: "AIzaSyBDzmZgzjx3zcLm-bi38iQtNkqDfrqTII8",
       authDomain: "infosec-qr-show-cebb5.firebaseapp.com",
@@ -79,20 +138,17 @@
     const counterRef = ref(db, "connections");
     const counterEl = document.getElementById("counter");
 
-    // 🔁 Обновление счётчика при изменениях в базе
+    // 🔁 Реальное обновление счётчика при изменении базы
     onValue(counterRef, (snapshot) => {
-      const value = snapshot.val() || 0;
-      counterEl.textContent = value;
+      const val = snapshot.val() || 0;
+      counterEl.textContent = val;
     });
 
-    // 💾 При первом визите с устройства — увеличить счётчик
-    if (!localStorage.getItem("visited")) {
-      get(counterRef).then(snapshot => {
-        const current = snapshot.val() || 0;
-        set(counterRef, current + 1);
-        localStorage.setItem("visited", "true");
-      });
-    }
+    // ➕ При каждом открытии страницы увеличить счётчик
+    get(counterRef).then(snapshot => {
+      const current = snapshot.val() || 0;
+      set(counterRef, current + 1);
+    });
   </script>
 </body>
 </html>
