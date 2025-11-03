@@ -2,120 +2,155 @@
 <html lang="ru">
 <head>
   <meta charset="UTF-8" />
-  <title>Инфобез Счётчик</title>
+  <title>INFSEC COUNTER</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
+    /* === ОБЩИЙ СТИЛЬ === */
     body {
       margin: 0;
-      background-color: #000;
-      color: #00ff99;
+      padding: 0;
+      background: #000;
       font-family: 'Share Tech Mono', monospace;
+      color: #00ff99;
+      overflow: hidden;
+      height: 100vh;
       display: flex;
       flex-direction: column;
-      align-items: center;
       justify-content: center;
-      height: 100vh;
-      overflow: hidden;
+      align-items: center;
+      text-align: center;
     }
 
-    /* Эффект движущейся “сетки” */
-    body::before {
-      content: "";
+    /* === ЭФФЕКТ ГЛЮКОВ === */
+    .glitch {
+      position: relative;
+      color: #00ff99;
+      font-size: 140px;
+      text-shadow: 0 0 10px #00ff99, 0 0 40px #00ff99;
+      animation: flicker 3s infinite;
+    }
+
+    .glitch::before,
+    .glitch::after {
+      content: attr(data-text);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+      overflow: hidden;
+      color: #ff0033;
+      clip: rect(0, 0, 0, 0);
+    }
+
+    .glitch::before {
+      animation: glitchTop 2s infinite linear alternate-reverse;
+    }
+
+    .glitch::after {
+      color: #00ffff;
+      animation: glitchBottom 2.5s infinite linear alternate-reverse;
+    }
+
+    @keyframes glitchTop {
+      0% { clip: rect(0, 9999px, 0, 0); transform: translate(0); }
+      10% { clip: rect(10px, 9999px, 60px, 0); transform: translate(-5px, -5px); }
+      20% { clip: rect(85px, 9999px, 140px, 0); transform: translate(5px, 0); }
+      30% { clip: rect(45px, 9999px, 80px, 0); transform: translate(-3px, 3px); }
+      100% { clip: rect(0, 9999px, 0, 0); transform: translate(0); }
+    }
+
+    @keyframes glitchBottom {
+      0% { clip: rect(0, 9999px, 0, 0); transform: translate(0); }
+      10% { clip: rect(130px, 9999px, 200px, 0); transform: translate(3px, 3px); }
+      20% { clip: rect(50px, 9999px, 100px, 0); transform: translate(-5px, 0); }
+      30% { clip: rect(20px, 9999px, 60px, 0); transform: translate(5px, -2px); }
+      100% { clip: rect(0, 9999px, 0, 0); transform: translate(0); }
+    }
+
+    @keyframes flicker {
+      0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+      20%, 24%, 55% { opacity: 0.4; }
+    }
+
+    /* === КУРСОР === */
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 40px;
+      background: #00ff99;
+      margin-left: 10px;
+      animation: blink 0.7s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    /* === ПОДПИСЬ === */
+    .label {
+      margin-top: 80px;
+      font-size: 80px;
+      color: #ff0033;
+      text-shadow: 0 0 20px #ff0033, 0 0 60px #ff0033;
+      animation: pulse 1.8s infinite alternate;
+      letter-spacing: 3px;
+    }
+
+    @keyframes pulse {
+      from { transform: scale(1); opacity: 1; }
+      to { transform: scale(1.05); opacity: 0.8; }
+    }
+
+    /* === ФОН: цифровой шум === */
+    .matrix {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
-      background-image: repeating-linear-gradient(
-        0deg,
-        rgba(0,255,100,0.05) 0px,
-        rgba(0,255,100,0.05) 1px,
-        transparent 1px,
-        transparent 40px
-      ),
-      repeating-linear-gradient(
-        90deg,
-        rgba(0,255,100,0.05) 0px,
-        rgba(0,255,100,0.05) 1px,
-        transparent 1px,
-        transparent 40px
-      );
+      background-image: repeating-linear-gradient(0deg, rgba(0,255,100,0.05) 0px, rgba(0,255,100,0.05) 1px, transparent 1px, transparent 40px),
+                        repeating-linear-gradient(90deg, rgba(0,255,100,0.05) 0px, rgba(0,255,100,0.05) 1px, transparent 1px, transparent 40px);
       z-index: 0;
-      animation: gridMove 10s linear infinite;
+      animation: matrix 10s linear infinite;
     }
 
-    @keyframes gridMove {
+    @keyframes matrix {
       from { background-position: 0 0, 0 0; }
       to { background-position: 0 40px, 40px 0; }
     }
 
-    h1 {
-      font-size: 70px;
-      text-shadow: 0 0 20px #00ff99, 0 0 50px #00ff99;
-      z-index: 1;
-      letter-spacing: 3px;
-      margin: 0;
-    }
-
-    #counter {
-      font-size: 160px;
-      font-weight: bold;
-      color: #0f0;
-      text-shadow: 0 0 40px #00ff00, 0 0 100px #00ff00;
-      margin-top: 40px;
-      animation: flicker 2s infinite;
-      z-index: 1;
-    }
-
-    @keyframes flicker {
-      0%, 18%, 22%, 25%, 53%, 57%, 100% {
-        opacity: 1;
-      }
-      20%, 24%, 55% {
-        opacity: 0.4;
-      }
-    }
-
-    .label {
-      margin-top: 100px;
-      font-size: 80px;
-      font-weight: bold;
-      color: #ff0033;
-      text-shadow: 0 0 30px #ff0033, 0 0 60px #ff0033;
-      animation: pulse 1.5s infinite alternate;
-      letter-spacing: 4px;
-      z-index: 1;
-    }
-
-    @keyframes pulse {
-      from { transform: scale(1); opacity: 1; }
-      to { transform: scale(1.1); opacity: 0.9; }
-    }
-
-    /* Эффект сканирующей линии */
-    .scan-line {
+    /* === ЭФФЕКТ ЭКРАНА === */
+    .screen {
       position: absolute;
       top: 0;
       left: 0;
       width: 100%;
-      height: 3px;
-      background: rgba(0,255,0,0.5);
-      box-shadow: 0 0 20px 5px rgba(0,255,0,0.3);
-      animation: scan 3s linear infinite;
-      z-index: 1;
+      height: 100%;
+      background: repeating-linear-gradient(
+        rgba(0,255,0,0.03) 0px,
+        rgba(0,255,0,0.03) 1px,
+        transparent 1px,
+        transparent 2px
+      );
+      pointer-events: none;
+      animation: scan 4s linear infinite;
     }
 
     @keyframes scan {
-      0% { top: 0; }
-      100% { top: 100%; }
+      0% { background-position: 0 0; }
+      100% { background-position: 0 100%; }
     }
+
   </style>
 </head>
 <body>
-  <div class="scan-line"></div>
-  <h1>Подключений</h1>
-  <div id="counter">0</div>
+  <div class="matrix"></div>
+  <div class="screen"></div>
+
+  <div class="glitch" id="counter" data-text="0">0</div>
+  <div class="cursor"></div>
   <div class="label">КНИТУ ИХТИ 151-24</div>
 
   <script type="module">
@@ -133,18 +168,20 @@
       measurementId: "G-LVMZJPB7JG"
     };
 
+
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
     const counterRef = ref(db, "connections");
     const counterEl = document.getElementById("counter");
 
-    // 🔁 Реальное обновление счётчика при изменении базы
+    // 🔁 Обновление счётчика в реальном времени
     onValue(counterRef, (snapshot) => {
       const val = snapshot.val() || 0;
       counterEl.textContent = val;
+      counterEl.setAttribute('data-text', val);
     });
 
-    // ➕ При каждом открытии страницы увеличить счётчик
+    // ➕ Добавляем +1 при входе
     get(counterRef).then(snapshot => {
       const current = snapshot.val() || 0;
       set(counterRef, current + 1);
@@ -152,3 +189,4 @@
   </script>
 </body>
 </html>
+
