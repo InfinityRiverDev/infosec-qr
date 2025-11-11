@@ -162,7 +162,7 @@
     onValue(connectionsRef, snap => {
       const val = snap.val() || 0;
       counterEl.textContent = val;
-      if (val >= 24 ) { // ✅ изменено на 20 подключений
+      if (val >= 24 ) { 
         runTransaction(countdownRef, current => {
           if (current === null || current.start === undefined) {
             return { start: serverTimestamp(), duration: 10 };
